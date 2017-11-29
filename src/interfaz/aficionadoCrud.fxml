@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.aficionadoCrudController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AficionadoCrudController">
     <children>
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
             <children>
@@ -24,7 +24,14 @@
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
             <children>
                 <Label text="Password" />
-                <PasswordField fx:id="passField" />
+                <PasswordField fx:id="passField" disable="true" />
+            <HBox fx:id="panelModificar" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" visible="false">
+               <children>
+                  <Label text="Modificar" />
+                  <RadioButton fx:id="modificarSi" mnemonicParsing="false" onAction="#modificarOnClick" text="Si" />
+                  <RadioButton mnemonicParsing="false" onAction="#modificarOnClick" text="No" />
+               </children>
+            </HBox>
             </children>
          <padding>
             <Insets left="15.0" />
@@ -63,6 +70,7 @@
                                 <RadioButton fx:id="noFoto" mnemonicParsing="false" selected="true" text="No" />
                             </children>
                         </HBox>
+                  <Button mnemonicParsing="false" onAction="#cargarFotoOnClick" text="Cargar Foto" />
                     </children>
                 </VBox>
             </children>

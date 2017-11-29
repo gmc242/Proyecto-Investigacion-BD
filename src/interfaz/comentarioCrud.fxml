@@ -8,15 +8,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="parent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox alignment="CENTER" prefHeight="65.0" prefWidth="600.0" spacing="15.0">
          <children>
-            <Label fx:id="numeroLabel" text="prueba" />
-            <Label fx:id="labelCorreo" text="prueba" />
+            <Label fx:id="labelNumero" text="Numero" />
+            <Label fx:id="labelUsuario" text="Usuario" />
+            <Label fx:id="labelCorreo" text="Correo" />
             <ImageView fx:id="fotoView" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
-                  <Insets left="400.0" />
+                  <Insets left="350.0" />
                </HBox.margin></ImageView>
          </children>
       </HBox>
@@ -24,9 +25,10 @@
          <children>
             <TextArea fx:id="areaTexto" prefHeight="88.0" prefWidth="599.0" />
          </children></HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="41.0" prefWidth="600.0">
+      <HBox alignment="CENTER_RIGHT" prefHeight="41.0" prefWidth="600.0" spacing="15.0">
          <children>
-            <Button fx:id="boton" mnemonicParsing="false" onAction="#accionOnClick" text="Responder" />
+            <Button fx:id="botonAceptar" mnemonicParsing="false" onAction="#aceptarOnClick" text="Aceptar" />
+            <Button fx:id="botonResponder" mnemonicParsing="false" onAction="#responderOnClick" text="Responder" />
          </children>
          <padding>
             <Insets right="25.0" />

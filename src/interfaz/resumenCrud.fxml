@@ -1,14 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="interfaz.ResumenCrud"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ResumenController">
+   <children>
+      <HBox alignment="CENTER" prefHeight="64.0" prefWidth="600.0" spacing="15.0">
+         <children>
+            <Label text="Numero de Partido" />
+            <TextField fx:id="partidoField" />
+            <Button fx:id="buscarBoton" mnemonicParsing="false" onAction="#buscarOnClick" text="Buscar" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="66.0" prefWidth="600.0" spacing="15.0">
+         <children>
+            <Label fx:id="equipo1Label" text="Equipo1">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label text="vs">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label fx:id="equipo2Label" text="Equipo2">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <Label text="Resumen:" />
+            <TextArea fx:id="resumenTexto" prefHeight="68.0" prefWidth="722.0" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="234.0" prefWidth="800.0">
+         <children>
+            <VBox prefHeight="141.0" prefWidth="275.0">
+               <children>
+                  <MediaView fx:id="videoView" fitHeight="200.0" fitWidth="275.0" />
+                  <HBox alignment="CENTER" prefHeight="45.0" prefWidth="264.0" spacing="15.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#anteriorOnClick" text="Anterior" />
+                        <Button fx:id="reproducirBoton" mnemonicParsing="false" onAction="#reproducirOnClick" text="Reproducir" />
+                        <Button mnemonicParsing="false" onAction="#siguienteOnClick" text="Siguiente" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="225.0" prefWidth="100.0" spacing="15.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#agregarOnClick" text="Agregar" />
+                  <Button mnemonicParsing="false" onAction="#eliminarOnClick" text="Eliminar" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="59.0" prefWidth="800.0" spacing="15.0">
+         <children>
+            <Label text="Comentarios" />
+         </children>
+      </HBox>
+      <ScrollPane fx:id="comentariosPanel" prefHeight="277.0" prefWidth="800.0">
+         <content>
+            <VBox fx:id="contenedorComentarios" prefHeight="247.0" prefWidth="797.0" />
+         </content>
+      </ScrollPane>
+      <HBox alignment="CENTER" prefHeight="70.0" prefWidth="600.0" spacing="15.0">
+         <children>
+            <Button fx:id="aceptarBoton" mnemonicParsing="false" onAction="#aceptarOnClick" text="Aceptar" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

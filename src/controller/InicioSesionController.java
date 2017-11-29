@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import org.bson.Document;
 import org.bson.types.Binary;
 
-public class inicioSesionController {
+public class InicioSesionController {
 
     @FXML private TextField usuarioField;
     @FXML private PasswordField passField;
@@ -32,6 +32,7 @@ public class inicioSesionController {
                     byte[] sal = ((Binary) resultado.get("sal")).getData();
                     byte[] passEncriptado = ((Binary) resultado.get("pass")).getData();
                     valido = ValidacionPassword.esPasswordValido(passEncriptado, sal, passField.getText());
+                    Controller.registrarUsuario(usuario);
 
                     // Cierra ventana
                     Stage stage = (Stage) usuarioField.getScene().getWindow();

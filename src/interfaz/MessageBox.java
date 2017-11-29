@@ -25,4 +25,14 @@ public class MessageBox {
         alerta.close();
         return respuesta;
     }
+
+    public static void crearAlerta(String mensaje){
+        Alert alertaLocal = new Alert(Alert.AlertType.ERROR, mensaje);
+        alertaLocal.show();
+    }
+
+    public static void crearConfirmacion(String mensaje){
+        Alert alertaLocal = new Alert(Alert.AlertType.CONFIRMATION, mensaje);
+        alertaLocal.show();
+    }
 }
