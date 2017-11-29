@@ -20,6 +20,7 @@ public class InicioSesionController {
 
     @FXML public void aceptarOnClick(){
         String usuario = usuarioField.getText();
+
         if(!usuario.equals("") && !passField.getText().equals("")){
             try {
 
