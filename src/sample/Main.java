@@ -1,5 +1,6 @@
 package sample;
 
+import controller.Controller;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,10 +11,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("./interfaz/principal.fxml"));
-        primaryStage.setTitle("Hello World");
+        Parent root = FXMLLoader.load(getClass().getResource("../interfaz/principal.fxml"));
+        primaryStage.setTitle("Proyecto de Investigación - MongoDB");
         primaryStage.setScene(new Scene(root, 1000, 700));
         primaryStage.show();
+
+        primaryStage.setOnCloseRequest((WindowEvent)->{
+            Controller.cerrarConexion();
+        });
     }
 
 

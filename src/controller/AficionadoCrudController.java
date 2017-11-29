@@ -25,7 +25,7 @@ import static com.mongodb.client.model.Updates.set;
 
 public class AficionadoCrudController {
 
-    @FXML private Label usuarioField;
+    @FXML private TextField usuarioField;
     @FXML private PasswordField passField;
     @FXML private TextField emailField;
     @FXML private ImageView fotoView;
@@ -128,9 +128,10 @@ public class AficionadoCrudController {
         File imagen = new FileChooser().showOpenDialog(stage);
         if(imagen != null){
             try{
-                fotoView.setImage(new Image(imagen.getAbsolutePath()));
+                fotoView.setImage(new Image(imagen.toURI().toString()));
             }catch (Exception e){
-                Controller.manejarExcepcion(e);
+                MessageBox.crearAlerta("No se ha podido cargar la foto. \nRazon: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }

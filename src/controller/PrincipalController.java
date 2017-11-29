@@ -10,15 +10,21 @@ import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
 public class PrincipalController {
+
     @FXML private ScrollPane contenedorPrincipal;
 
+    public PrincipalController(){
+        Controller.inicializar();
+    }
+
     @FXML public void resumenOnClick(){
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/aficionadoCrud.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/resumenCrud.fxml"));
         try{
             Node n = loader.load();
             contenedorPrincipal.setContent(n);
         }catch (Exception e){
             MessageBox.crearAlerta("No se puede encontrar el archivo que contiene la interfaz");
+            e.printStackTrace();
         }
     }
 
@@ -29,6 +35,7 @@ public class PrincipalController {
             contenedorPrincipal.setContent(n);
         }catch (Exception e){
             MessageBox.crearAlerta("No se puede encontrar el archivo que contiene la interfaz");
+            e.printStackTrace();
         }
     }
 
@@ -43,4 +50,6 @@ public class PrincipalController {
             MessageBox.crearAlerta("No se puede encontrar el archivo que contiene la interfaz.");
         }
     }
+
+
 }

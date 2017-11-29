@@ -3,12 +3,15 @@ package controller;
 import com.mongodb.MongoException;
 import interfaz.MessageBox;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.bson.Document;
 
@@ -17,6 +20,7 @@ import java.util.Map;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.push;
 import static com.mongodb.client.model.Updates.set;
 
 public class ComentarioController {
@@ -33,16 +37,20 @@ public class ComentarioController {
     private Document documento;
     private boolean comentarioPropio;
     private int numeroPartido;
+    private int nivelesReply;
+    private int comentarioParent;
 
-    public ComentarioController(int numeroPartido){
+    public ComentarioController(int numeroPartido, int nivelesReply, int comentarioParent){
         comentarioPropio = true;
         documento = null;
-        numeroPartido = numeroPartido;
+        this.numeroPartido = numeroPartido;
     }
 
-    public ComentarioController(int numeroPartido, Document documento){
+    public ComentarioController(int numeroPartido, Document documento, int nivelesReply, int comentarioParent){
         this.documento = documento;
-        numeroPartido = numeroPartido;
+        this.nivelesReply = nivelesReply;
+        this.comentarioParent = comentarioParent;
+        this.numeroPartido = numeroPartido;
         determinarSiEsPropio();
     }
 
@@ -72,11 +80,28 @@ public class ComentarioController {
 
             if(areaTexto != null){
 
+                int numeroComentario = 0;
+
+                for(Document resultado : Controller.getDatabase().getCollection("comentarios").
+                        find(eq("numero_partido", numeroPartido)))
+
+                    numeroComentario = (numeroComentario > resultado.getInteger("numero_comentario")) ?
+                            numeroComentario : resultado.getInteger("numero_comentario");
+
+                numeroComentario++;
+
                 Controller.getDatabase().getCollection("comentarios").
                         insertOne(new Document("numero_partido", numeroPartido).append
-                                ("numero_comentario", Integer.valueOf(labelNumero.getText())).append
+                                ("numero_comentario", numeroComentario).append //
                                 ("mensaje", areaTexto.getText()).append
                                 ("usuario", Controller.obtenerUsuario()));
+
+                if(comentarioParent > 0)
+                    Controller.getDatabase().getCollection("comentarios").updateOne(
+                            and(eq("numero_partido", numeroPartido),
+                                    eq("numero_comentario", comentarioParent)),
+                            push("replies", new Document("id", numeroComentario))
+                    );
 
             }else
                 new MessageBox(Alert.AlertType.ERROR, "El cuerpo del comentario no puede estar vacio");
@@ -93,13 +118,31 @@ public class ComentarioController {
 
             else
                 new MessageBox(Alert.AlertType.ERROR, "El cuerpo del comentario no puede estar vacio");
-
-
         }
     }
 
     @FXML public void responderOnClick(){
+        HBox contenedor = new HBox();
+        contenedor.setSpacing(15);
+        contenedor.setAlignment(Pos.CENTER);
 
+        for(int i = 0; i < nivelesReply; i++){
+            contenedor.getChildren().add(new Separator(Orientation.VERTICAL));
+        }
+
+        ComentarioController controllerInterno = new ComentarioController(
+                numeroPartido, nivelesReply + 1, Integer.valueOf(labelNumero.getText()));
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/comentario.fxml"));
+
+        try{
+            Node n = loader.load();
+            contenedor.getChildren().add(n);
+            VBox parentExterno = (VBox)parent.getParent();
+            parentExterno.getChildren().add(contenedor);
+        }catch (Exception e){
+            MessageBox.crearAlerta("No se puede mostrar el nuevo comentario ya que no se encuentra el archivo de interfaz");
+        }
     }
 
     private void determinarSiEsPropio(){

@@ -14,6 +14,9 @@ public class Controller {
     private static String usuario;
 
     public static void inicializar() {
+        if(conexion != null)
+            cerrarConexion();
+
         conexion = new MongoClient();
         db = conexion.getDatabase("bases");
     }
@@ -71,6 +74,11 @@ public class Controller {
         }
         mensaje += "\nMensaje de error: " + e.getMessage();
         MessageBox alerta = new MessageBox(Alert.AlertType.ERROR, mensaje);
+    }
+
+    public static void cerrarConexion(){
+        conexion.close();
+        conexion = null;
     }
 
 }

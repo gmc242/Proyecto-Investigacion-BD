@@ -1,5 +1,6 @@
 package controller;
 
+import com.mongodb.MongoException;
 import interfaz.MessageBox;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,13 +44,16 @@ public class ResumenController {
     private ArrayList<String> videos;
     private ArrayList<Integer> comentariosMostrados;
 
-    ResumenController(){
+    public ResumenController(){
+        videos = new ArrayList<>();
         comentariosMostrados = new ArrayList<>();
+        indexActualVideo = -1;
     }
 
-    ResumenController(Document documento){
+    public ResumenController(Document documento){
         this.documento = documento;
         comentariosMostrados = new ArrayList<>();
+        videos = new ArrayList<>();
     }
 
     @FXML public void initialize(){
@@ -65,7 +69,9 @@ public class ResumenController {
                 List<Document> comentarios = (List<Document>)documento.get("comentarios");
 
                 for(Document comentario : comentarios)
-                    popularComentario(comentario, 0);
+                    popularComentario(comentario, 0, 0);
+
+                inicializarURLS();
 
             }catch (Exception e){
                 if(e instanceof SQLException)
@@ -124,62 +130,106 @@ public class ResumenController {
     }
 
     @FXML public void anteriorOnClick(){
-        if(indexActualVideo > 0){
+        if(indexActualVideo > 0 && videoView.getMediaPlayer() != null){
             indexActualVideo--;
             videoView.getMediaPlayer().stop();
             videoView.setMediaPlayer(new MediaPlayer(new Media(videos.get(indexActualVideo))));
+        }else{
+            MessageBox.crearAlerta("No hay videos anteriores");
         }
     }
 
     @FXML public void reproducirOnClick(){
         if(reproducirBoton.getText().equals("Reproducir")){
-            reproducirBoton.setText("Detener");
-            if(videoView.getMediaPlayer() != null)
+            if(videoView.getMediaPlayer() != null) {
                 videoView.getMediaPlayer().play();
+                reproducirBoton.setText("Detener");
+            }
+            else
+                MessageBox.crearAlerta("No hay video por reproducir");
         }
         else{
-            reproducirBoton.setText("Reproducir");
-            if(videoView.getMediaPlayer() != null)
+            if(videoView.getMediaPlayer() != null) {
                 videoView.getMediaPlayer().stop();
+                reproducirBoton.setText("Reproducir");
+            }
+            else
+                MessageBox.crearAlerta("No hay video por detener");
         }
     }
 
     @FXML public void siguienteOnClick(){
-        if(indexActualVideo < videos.size()){
+        if(indexActualVideo < videos.size() && videoView.getMediaPlayer() != null){
             indexActualVideo++;
             videoView.getMediaPlayer().stop();
             videoView.setMediaPlayer(new MediaPlayer(new Media(videos.get(indexActualVideo))));
+        }else{
+            MessageBox.crearAlerta("No hay videos siguientes.");
         }
     }
 
     @FXML public void eliminarOnClick(){
         int temp = indexActualVideo;
-        siguienteOnClick();
-        String urlActual = videos.get(temp);
 
-        Controller.getDatabase().getCollection("resumenes").updateOne(
-                eq("numero_partido", documento.getInteger("numero_partido")),
-                pull("videos", new Document("url", urlActual))
-        );
+        if(indexActualVideo > -1) {
+            siguienteOnClick();
+            String urlActual = videos.get(temp);
+
+            Controller.getDatabase().getCollection("resumenes").updateOne(
+                    eq("numero_partido", documento.getInteger("numero_partido")),
+                    pull("videos", new Document("url", urlActual))
+            );
+        }else{
+            MessageBox.crearAlerta("No hay videos por borrar");
+        }
     }
 
     @FXML public void agregarOnClick(){
         if(indexActualVideo == -1){
 
-            indexActualVideo = 0;
-            Stage stage = (Stage) partidoField.getScene().getWindow();
-            File video = new FileChooser().showOpenDialog(stage);
-            videos.add(video.getAbsolutePath());
+            try {
 
-            Controller.getDatabase().getCollection("resumenes").updateOne(
-                    eq("numero_partido", documento.getInteger("numero_partido")),
-                    push("videos", new Document("url", video.getAbsolutePath()))
-            );
+                Stage stage = (Stage) partidoField.getScene().getWindow();
+                File video = new FileChooser().showOpenDialog(stage);
+
+                videos.add(video.toURI().toString());
+                videoView.setMediaPlayer(new MediaPlayer(new Media(video.toURI().toString())));
+                indexActualVideo = 0;
+
+                if(documento != null)
+                    Controller.getDatabase().getCollection("resumenes").updateOne(
+                            eq("numero_partido", documento.getInteger("numero_partido")),
+                            push("videos", new Document("url", video.getAbsolutePath()))
+                    );
+
+                MessageBox.crearConfirmacion("Se ha cargado con exito el video");
+
+            }catch (MongoException e){
+                MessageBox.crearAlerta("No se ha podido agregar el video a la base de datos");
+            }
+            catch (Exception e){
+                MessageBox.crearAlerta("No se ha podido cargar el video");
+            }
 
         }else{
-            Stage stage = (Stage) partidoField.getScene().getWindow();
-            File video = new FileChooser().showOpenDialog(stage);
-            videos.add(video.getAbsolutePath());
+
+            try {
+
+                Stage stage = (Stage) partidoField.getScene().getWindow();
+                File video = new FileChooser().showOpenDialog(stage);
+                videos.add(video.getAbsolutePath());
+
+                if (documento != null)
+                    Controller.getDatabase().getCollection("resumenes").updateOne(
+                            eq("numero_partido", documento.getInteger("numero_partido")),
+                            push("videos", new Document("url", video.getAbsolutePath()))
+                    );
+            }catch (MongoException e){
+                MessageBox.crearAlerta("No se ha podido actualizar el resumen; no se ha podido agregar el video.");
+            }
+            catch (Exception e){
+                MessageBox.crearAlerta("No se ha podido cargar el video");
+            }
         }
     }
 
@@ -187,15 +237,21 @@ public class ResumenController {
         try{
             videos = new ArrayList<>();
             List<Document> urls = (List<Document>) documento.get("videos");
+
             for(Document video : urls){
                 videos.add(video.getString("url"));
+            }
+
+            if(videos.size() > 0) {
+                videoView.setMediaPlayer(new MediaPlayer(new Media(videos.get(0))));
+                indexActualVideo = 0;
             }
         }catch (Exception e){
             MessageBox.crearAlerta("Ha habido un error obtieniendo los URLS de los videos");
         }
     }
 
-    private void popularComentario(Document comentario, int nivelesReply){
+    private void popularComentario(Document comentario, int nivelesReply, int comentarioParent){
 
         if(!comentariosMostrados.contains(comentario.getInteger("numero_comentario"))){
 
@@ -207,7 +263,7 @@ public class ResumenController {
                 contenedor.getChildren().add(new Separator(Orientation.VERTICAL));
             }
 
-            ComentarioController controller = new ComentarioController(documento.getInteger("numero_partido"), comentario);
+            ComentarioController controller = new ComentarioController(documento.getInteger("numero_partido"), comentario, nivelesReply, comentarioParent);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/comentarioCRUD.fxml"));
             loader.setController(controller);
 
@@ -227,7 +283,7 @@ public class ResumenController {
                             and(eq("numero_partido", numeroPartido), eq("numero_comentario", numeroComentario))).first();
 
                     if(replyDoc != null)
-                        popularComentario(replyDoc, nivelesReply+1);
+                        popularComentario(replyDoc, nivelesReply+1, comentario.getInteger("numero_comentario"));
                 }
 
             }catch (Exception e){
