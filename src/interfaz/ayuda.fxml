@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="371.0" prefWidth="574.0" text="Este programa le permitirá crear comentarios en los partidos creados en el proyecto 2.&#10;&#10;Con tal fin se recomienda primero crear un usuario con el botón &quot;Operaciones de Aficionados&quot;.&#10;En esta ventana va a encontrar algunos campos que deberá llenar, también se le dará la opción de mostrar o no su foto y correo en los comentarios.&#10;&#10;Cuando tenga su usuario, podrá crear comentarios en los resumenes y alterar su usuario.&#10;&#10;Se le recuerda que el único usuario que puede crear resúmenes es el administrador.&#10;&#10;Proyecto creado por:&#10;Gerardo Monge Corella&#10;2015145533&#10;" />
+   </children>
+</AnchorPane>
