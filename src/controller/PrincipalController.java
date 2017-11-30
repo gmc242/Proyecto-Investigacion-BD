@@ -18,6 +18,7 @@ public class PrincipalController {
     }
 
     @FXML public void resumenOnClick(){
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/resumenCrud.fxml"));
         try{
             Node n = loader.load();
@@ -25,6 +26,18 @@ public class PrincipalController {
         }catch (Exception e){
             MessageBox.crearAlerta("No se puede encontrar el archivo que contiene la interfaz");
             e.printStackTrace();
+        }
+    }
+
+    @FXML public void ayudaOnClick(){
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/ayuda.fxml"));
+        try{
+            Parent parent = (Parent) loader.load();
+            Stage ventana = new Stage();
+            ventana.setScene(new Scene(parent));
+            ventana.show();
+        }catch (Exception e){
+            MessageBox.crearAlerta("No se puede encontrar el archivo que contiene la interfaz.");
         }
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -66,9 +67,14 @@
             </VBox>
          </children>
       </HBox>
-      <HBox alignment="CENTER" prefHeight="59.0" prefWidth="800.0" spacing="15.0">
+      <HBox alignment="CENTER_RIGHT" prefHeight="59.0" prefWidth="800.0" spacing="15.0">
          <children>
             <Label text="Comentarios" />
+            <Button mnemonicParsing="false" onAction="#agregarComentarioOnClick" text="+">
+               <HBox.margin>
+                  <Insets left="350.0" right="10.0" />
+               </HBox.margin>
+            </Button>
          </children>
       </HBox>
       <ScrollPane fx:id="comentariosPanel" prefHeight="277.0" prefWidth="800.0">

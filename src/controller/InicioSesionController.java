@@ -35,6 +35,8 @@ public class InicioSesionController {
                     valido = ValidacionPassword.esPasswordValido(passEncriptado, sal, passField.getText());
                     Controller.registrarUsuario(usuario);
 
+                    MessageBox.crearConfirmacion("Ha iniciado con exito");
+
                     // Cierra ventana
                     Stage stage = (Stage) usuarioField.getScene().getWindow();
                     stage.close();

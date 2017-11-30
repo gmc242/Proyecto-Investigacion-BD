@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="org.mongodb:mongodb-driver:3.6.0-rc0" level="project" />
+    <orderEntry type="library" exported="" name="ojdbc6_g" level="project" />
   </component>
 </module>

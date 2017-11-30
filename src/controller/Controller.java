@@ -19,6 +19,8 @@ public class Controller {
 
         conexion = new MongoClient();
         db = conexion.getDatabase("bases");
+
+        usuario = "";
     }
 
     public static MongoDatabase getDatabase(){
@@ -39,26 +41,21 @@ public class Controller {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection conexionSQL = DriverManager.getConnection("jdbc:oracle:thin:dbaMundial/dba123456789@localhost");
 
-            MessageBox alerta = new MessageBox(Alert.AlertType.INFORMATION, "Se ha creado con exito la conexion");
-
             if(!conexionSQL.isValid(1000)){
                 throw new Exception("No se ha podido establecer la conexion a la base de datos");
             }
 
-            String query = "SELECT equipo1, equipo2 FROM partido WHERE numero_partido = ?";
+            String query = "SELECT equipo1, equipo2 FROM partido WHERE numero_partido = ? ";
             PreparedStatement statement = conexionSQL.prepareStatement(query);
             statement.setInt(1, numeroPartido);
+
             ResultSet resultados = statement.executeQuery();
+            resultados.next();
 
-            if(resultados != null && resultados.next()){
-                String equipo1 = resultados.getString("equipo1");
-                String equipo2 = resultados.getString("equipo2");
+            String equipo1 = resultados.getString("equipo1");
+            String equipo2 = resultados.getString("equipo2");
 
-                return new Pair<>(equipo1, equipo2);
-            }
-
-            else
-                throw new Exception("No se han obtenido resultados en la base de datos");
+            return new Pair<>(equipo1, equipo2);
 
         }catch (SQLException e){
             throw e;

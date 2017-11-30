@@ -19,6 +19,7 @@
                         <Insets />
                      </VBox.margin>
                   </Button>
+                  <Button mnemonicParsing="false" onAction="#ayudaOnClick" text="Ayuda" />
                   <Button mnemonicParsing="false" onAction="#resumenOnClick" text="Operaciones de Resumen" />
                   <Button mnemonicParsing="false" onAction="#aficionadoOnClick" text="Operaciones de Aficionado" />
                </children>

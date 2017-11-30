@@ -16,6 +16,7 @@
             <children>
                 <Label text="Código único de aficionado:" />
             <TextField fx:id="usuarioField" />
+            <Button mnemonicParsing="false" onAction="#buscarOnClick" text="Buscar" />
             </children>
          <padding>
             <Insets left="15.0" />

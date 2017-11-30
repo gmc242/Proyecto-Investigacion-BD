@@ -48,9 +48,12 @@ public class AficionadoCrudController {
             fotoView.setImage(new Image(documento.getString("foto")));
             siFoto.setSelected(documento.getBoolean("foto_presente"));
             noFoto.setSelected(!siFoto.isSelected());
+            passField.setDisable(true);
         }
-        else
+        else {
             panelModificar.setVisible(false);
+            passField.setDisable(false);
+        }
     }
 
     @FXML public void aceptarOnClick(){
@@ -72,22 +75,50 @@ public class AficionadoCrudController {
 
                 if(controllerInicio.isValido() && usuarioAntesIS.equals(Controller.obtenerUsuario())){
 
-                    Pair<byte[], byte[]> resultadoDeEncriptacion = ValidacionPassword.generarEncriptado(passField.getText());
-                    byte[] sal = resultadoDeEncriptacion.getKey();
-                    byte[] encriptado = resultadoDeEncriptacion.getValue();
+                    if(modificarSi.isSelected()) {
 
-                    Document query = new Document("correo", correo).
-                            append("correo_presente", siCorreo.isSelected()).append("foto", fotoView.getImage().getUrl()).
-                            append("foto_presente", siFoto.isSelected()).append("sal", sal).append("pass", encriptado);
+                        Pair<byte[], byte[]> resultadoDeEncriptacion = ValidacionPassword.generarEncriptado(passField.getText());
+                        byte[] sal = resultadoDeEncriptacion.getKey();
+                        byte[] encriptado = resultadoDeEncriptacion.getValue();
 
-                    Controller.getDatabase().getCollection("aficionados").
-                            updateOne(eq("usuario", usuarioField.getText()),
-                                    combine(set("correo", correo),
-                                            set("correo_presente", siCorreo.isSelected()),
-                                            set("foto", fotoView.getImage().getUrl()),
-                                            set("foto_presente", siFoto.isSelected()),
-                                            set("sal", sal),
-                                            set("pass", encriptado)));
+                        Controller.getDatabase().getCollection("aficionados").
+                                updateOne(eq("usuario", usuarioField.getText()),
+                                        combine(set("correo", correo),
+                                                set("correo_presente", siCorreo.isSelected()),
+                                                set("foto", fotoView.getImage().getUrl()),
+                                                set("foto_presente", siFoto.isSelected()),
+                                                set("sal", sal),
+                                                set("pass", encriptado)));
+
+                        MessageBox.crearAlerta("Los cambios se han guardado con exito");
+
+                        String usuario = usuarioField.getText();
+                        Document doc = Controller.getDatabase().getCollection("aficionados").
+                                find(new Document("usuario", usuario)).first();
+
+                        if (doc != null) {
+                            documento = doc;
+                        }
+
+                    }else{
+
+                        Controller.getDatabase().getCollection("aficionados").
+                                updateOne(eq("usuario", usuarioField.getText()),
+                                        combine(set("correo", correo),
+                                                set("correo_presente", siCorreo.isSelected()),
+                                                set("foto", fotoView.getImage().getUrl()),
+                                                set("foto_presente", siFoto.isSelected())));
+
+                        MessageBox.crearAlerta("Los cambios se han guardado con exito");
+
+                        String usuario = usuarioField.getText();
+                        Document doc = Controller.getDatabase().getCollection("aficionados").
+                                find(new Document("usuario", usuario)).first();
+
+                        if (doc != null) {
+                            documento = doc;
+                        }
+                    }
                 }
                 else{
                     MessageBox alerta = new MessageBox(Alert.AlertType.ERROR, "El password o usuario ingresado no es correcto");
@@ -109,6 +140,16 @@ public class AficionadoCrudController {
                             append("foto_presente", siFoto.isSelected()).append("sal", sal).append("pass", encriptado);
 
                     Controller.getDatabase().getCollection("aficionados").insertOne(query);
+
+                    MessageBox.crearConfirmacion("El usuario se ha registrado con éxito");
+
+                    String usuario = usuarioField.getText();
+                    Document doc = Controller.getDatabase().getCollection("aficionados").
+                            find(new Document("usuario", usuario)).first();
+
+                    if(doc != null) {
+                        documento = doc;
+                    }
 
                 }catch(Exception e){
                     Controller.manejarExcepcion(e);
@@ -134,6 +175,24 @@ public class AficionadoCrudController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @FXML
+    public void buscarOnClick(){
+        String usuario = usuarioField.getText();
+        if(usuario.equals(Controller.obtenerUsuario())) {
+            Document doc = Controller.getDatabase().getCollection("aficionados").
+                    find(new Document("usuario", usuario)).first();
+
+            if (doc != null) {
+                documento = doc;
+                initialize();
+            }
+        }else{
+            MessageBox.crearAlerta("No se puede editar los datos de un usuario distinto a suyo.\n" +
+                    "Si está editando su usuario, inicie sesión primero.");
+        }
+
     }
 
     public void setDocumento(Document documento){

@@ -15,6 +15,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.bson.Document;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.and;
@@ -32,6 +34,7 @@ public class ComentarioController {
     @FXML private Label labelUsuario;
     @FXML private ImageView fotoView;
     @FXML private TextArea areaTexto;
+    @FXML private Label labelFecha;
     @FXML private VBox parent;
 
     private Document documento;
@@ -80,41 +83,58 @@ public class ComentarioController {
 
             if(areaTexto != null){
 
-                int numeroComentario = 0;
+                if(!Controller.obtenerUsuario().equals("")) {
 
-                for(Document resultado : Controller.getDatabase().getCollection("comentarios").
-                        find(eq("numero_partido", numeroPartido)))
+                    int numeroComentario = 0;
 
-                    numeroComentario = (numeroComentario > resultado.getInteger("numero_comentario")) ?
-                            numeroComentario : resultado.getInteger("numero_comentario");
+                    for (Document resultado : Controller.getDatabase().getCollection("comentarios").
+                            find(eq("numero_partido", numeroPartido)))
 
-                numeroComentario++;
+                        numeroComentario = (numeroComentario > resultado.getInteger("numero_comentario")) ?
+                                numeroComentario : resultado.getInteger("numero_comentario");
 
-                Controller.getDatabase().getCollection("comentarios").
-                        insertOne(new Document("numero_partido", numeroPartido).append
-                                ("numero_comentario", numeroComentario).append //
-                                ("mensaje", areaTexto.getText()).append
-                                ("usuario", Controller.obtenerUsuario()));
+                    numeroComentario++;
 
-                if(comentarioParent > 0)
-                    Controller.getDatabase().getCollection("comentarios").updateOne(
-                            and(eq("numero_partido", numeroPartido),
-                                    eq("numero_comentario", comentarioParent)),
-                            push("replies", new Document("id", numeroComentario))
-                    );
+                    Controller.getDatabase().getCollection("comentarios").
+                            insertOne(new Document("numero_partido", numeroPartido).append
+                                    ("numero_comentario", numeroComentario).append //
+                                    ("mensaje", areaTexto.getText()).append
+                                    ("usuario", Controller.obtenerUsuario()).append
+                                    ("fecha", Date.from(Instant.now())));
 
+                    if (comentarioParent > 0)
+                        Controller.getDatabase().getCollection("comentarios").updateOne(
+                                and(eq("numero_partido", numeroPartido),
+                                        eq("numero_comentario", comentarioParent)),
+                                push("replies", new Document("id", numeroComentario))
+                        );
+
+                    MessageBox.crearConfirmacion("Se creado el comentario con exito");
+
+                }else{
+                    MessageBox.crearAlerta("Debe iniciar sesión primero");
+                }
             }else
                 new MessageBox(Alert.AlertType.ERROR, "El cuerpo del comentario no puede estar vacio");
         }
         else{
 
-            if(areaTexto != null)
+            if(areaTexto != null) {
 
-                Controller.getDatabase().getCollection("comentarios").
-                        updateOne(and(
-                                eq("numero_comentario", Integer.valueOf(labelNumero.getText())),
-                                eq("numero_partido", numeroPartido)), //Filtro
-                                set("mensaje", areaTexto.getText()));
+                if(!Controller.obtenerUsuario().equals("")) {
+
+                    Controller.getDatabase().getCollection("comentarios").
+                            updateOne(and(
+                                    eq("numero_comentario", Integer.valueOf(labelNumero.getText())),
+                                    eq("numero_partido", numeroPartido)), //Filtro
+                                    set("mensaje", areaTexto.getText()));
+
+                    MessageBox.crearConfirmacion("Se ha actualizado la informacion con exito");
+
+                }else{
+                    MessageBox.crearAlerta("Debe iniciar sesión primero");
+                }
+            }
 
             else
                 new MessageBox(Alert.AlertType.ERROR, "El cuerpo del comentario no puede estar vacio");
@@ -122,26 +142,32 @@ public class ComentarioController {
     }
 
     @FXML public void responderOnClick(){
-        HBox contenedor = new HBox();
-        contenedor.setSpacing(15);
-        contenedor.setAlignment(Pos.CENTER);
+        if(!Controller.obtenerUsuario().equals("")){
 
-        for(int i = 0; i < nivelesReply; i++){
-            contenedor.getChildren().add(new Separator(Orientation.VERTICAL));
-        }
+            HBox contenedor = new HBox();
+            contenedor.setSpacing(15);
+            contenedor.setAlignment(Pos.CENTER);
 
-        ComentarioController controllerInterno = new ComentarioController(
-                numeroPartido, nivelesReply + 1, Integer.valueOf(labelNumero.getText()));
+            for(int i = 0; i < nivelesReply; i++){
+                contenedor.getChildren().add(new Separator(Orientation.VERTICAL));
+            }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/comentario.fxml"));
+            ComentarioController controllerInterno = new ComentarioController(
+                    numeroPartido, nivelesReply + 1, Integer.valueOf(labelNumero.getText()));
 
-        try{
-            Node n = loader.load();
-            contenedor.getChildren().add(n);
-            VBox parentExterno = (VBox)parent.getParent();
-            parentExterno.getChildren().add(contenedor);
-        }catch (Exception e){
-            MessageBox.crearAlerta("No se puede mostrar el nuevo comentario ya que no se encuentra el archivo de interfaz");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/comentario.fxml"));
+
+            try{
+                Node n = loader.load();
+                contenedor.getChildren().add(n);
+                VBox parentExterno = (VBox)parent.getParent();
+                parentExterno.getChildren().add(contenedor);
+            }catch (Exception e){
+                MessageBox.crearAlerta("No se puede mostrar el nuevo comentario ya que no se encuentra el archivo de interfaz");
+                e.printStackTrace();
+            }
+        }else{
+            MessageBox.crearAlerta("Debe iniciar sesion primero");
         }
     }
 
@@ -154,15 +180,19 @@ public class ComentarioController {
     private void popularDatosExistente(){
 
         String usuario = documento.getString("usuario");
+        int numero = documento.getInteger("numero_comentario");
 
-        labelNumero.setText(documento.getLong("numero_comentario").toString());
+        labelNumero.setText(String.valueOf(numero));
         labelUsuario.setText(usuario);
         areaTexto.setText(documento.getString("mensaje"));
+        labelFecha.setText(documento.getDate("fecha").toString());
 
         Document usuarioDoc = Controller.getDatabase().getCollection("aficionados").find(new Document("usuario", usuario)).first();
 
         if(usuarioDoc != null && usuarioDoc.getBoolean("correo_presente"))
             labelCorreo.setText(usuarioDoc.getString("correo"));
+        else
+            labelCorreo.setText("");
 
         if(usuarioDoc != null && usuarioDoc.getBoolean("foto_presente"))
             fotoView.setImage(new Image(usuarioDoc.getString("foto")));
@@ -175,9 +205,12 @@ public class ComentarioController {
 
         Document usuarioDoc = Controller.getDatabase().getCollection("aficionados").find(new Document("usuario", usuario)).first();
         labelUsuario.setText(usuario);
+        labelFecha.setText(Date.from(Instant.now()).toString());
 
         if(usuarioDoc != null && usuarioDoc.getBoolean("correo_presente"))
             labelCorreo.setText(usuarioDoc.getString("correo"));
+        else
+            labelCorreo.setText("");
 
         if(usuarioDoc != null && usuarioDoc.getBoolean("foto_presente"))
             fotoView.setImage(new Image(usuarioDoc.getString("foto")));
