@@ -162,6 +162,40 @@ public class AficionadoCrudController {
         passField.setDisable(!modificarSi.isSelected());
     }
 
+    @FXML public void eliminarOnClick(){
+
+        String usuarioAntesIS = Controller.obtenerUsuario();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/inicioSesion.fxml"));
+
+        try {
+
+            Parent n = loader.load();
+            Stage ventana = new Stage();
+            ventana.setScene(new Scene(n, 400, 200));
+            ventana.showAndWait();
+
+            if (usuarioAntesIS.equals(Controller.obtenerUsuario())) {
+
+                Controller.getDatabase().getCollection("aficionados").updateOne(
+                        eq("usuario", usuarioAntesIS),
+                        combine(
+                                set("correo", "BORRADO"),
+                                set("corre_presente", true),
+                                set("foto_presente", false))
+                );
+
+                MessageBox.crearAlerta("Se ha borrado con exito el usuario");
+
+                documento = null;
+                initialize();
+            }
+
+        }catch (Exception e){
+            MessageBox.crearAlerta("No se pudo abrir la interfaz de inicio de sesion");
+        }
+
+    }
+
     @FXML
     public void cargarFotoOnClick(){
         Stage stage = (Stage) usuarioField.getScene().getWindow();
@@ -184,8 +218,12 @@ public class AficionadoCrudController {
                     find(new Document("usuario", usuario)).first();
 
             if (doc != null) {
-                documento = doc;
-                initialize();
+                if(!documento.getString("correo").equals("BORRADO")) {
+                    documento = doc;
+                    initialize();
+                }else{
+                    MessageBox.crearAlerta("El usuario buscado ha sido borrado");
+                }
             }
         }else{
             MessageBox.crearAlerta("No se puede editar los datos de un usuario distinto a suyo.\n" +

@@ -82,6 +82,7 @@
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
             <children>
                 <Button fx:id="aceptarBoton" mnemonicParsing="false" onAction="#aceptarOnClick" text="Aceptar" />
+            <Button mnemonicParsing="false" onAction="#eliminarOnClick" text="Eliminar" />
             </children>
         </HBox>
     </children>

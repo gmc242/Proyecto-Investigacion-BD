@@ -215,6 +215,9 @@ public class ComentarioController {
         if(usuarioDoc != null && usuarioDoc.getBoolean("foto_presente"))
             fotoView.setImage(new Image(usuarioDoc.getString("foto")));
 
+        if(usuarioDoc.getString("correo").equals("BORRADO"))
+            labelUsuario.setText("");
+
     }
 
     private void popularDatosNoExistente(){
