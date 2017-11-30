@@ -64,7 +64,6 @@ public class AficionadoCrudController {
 
             String usuarioAntesIS = Controller.obtenerUsuario();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/inicioSesion.fxml"));
-            InicioSesionController controllerInicio = loader.getController();
 
             try {
 
@@ -73,7 +72,7 @@ public class AficionadoCrudController {
                 ventana.setScene(new Scene(n, 400, 200));
                 ventana.showAndWait();
 
-                if(controllerInicio.isValido() && usuarioAntesIS.equals(Controller.obtenerUsuario())){
+                if(usuarioAntesIS.equals(Controller.obtenerUsuario())){
 
                     if(modificarSi.isSelected()) {
 
@@ -90,7 +89,7 @@ public class AficionadoCrudController {
                                                 set("sal", sal),
                                                 set("pass", encriptado)));
 
-                        MessageBox.crearAlerta("Los cambios se han guardado con exito");
+                        MessageBox.crearConfirmacion("Los cambios se han guardado con exito");
 
                         String usuario = usuarioField.getText();
                         Document doc = Controller.getDatabase().getCollection("aficionados").
@@ -109,7 +108,7 @@ public class AficionadoCrudController {
                                                 set("foto", fotoView.getImage().getUrl()),
                                                 set("foto_presente", siFoto.isSelected())));
 
-                        MessageBox.crearAlerta("Los cambios se han guardado con exito");
+                        MessageBox.crearConfirmacion("Los cambios se han guardado con exito");
 
                         String usuario = usuarioField.getText();
                         Document doc = Controller.getDatabase().getCollection("aficionados").

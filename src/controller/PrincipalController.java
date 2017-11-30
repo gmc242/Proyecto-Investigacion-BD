@@ -34,6 +34,7 @@ public class PrincipalController {
         try{
             Parent parent = (Parent) loader.load();
             Stage ventana = new Stage();
+            ventana.setTitle("Ayuda");
             ventana.setScene(new Scene(parent));
             ventana.show();
         }catch (Exception e){

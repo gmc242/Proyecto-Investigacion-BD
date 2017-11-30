@@ -30,12 +30,18 @@ public class InicioSesionController {
                 Document resultado = encontrados.first();
 
                 if (resultado != null) {
+
                     byte[] sal = ((Binary) resultado.get("sal")).getData();
                     byte[] passEncriptado = ((Binary) resultado.get("pass")).getData();
                     valido = ValidacionPassword.esPasswordValido(passEncriptado, sal, passField.getText());
-                    Controller.registrarUsuario(usuario);
 
-                    MessageBox.crearConfirmacion("Ha iniciado con exito");
+                    if(valido){
+                        Controller.registrarUsuario(usuario);
+                        MessageBox.crearConfirmacion("Ha iniciado sesión con exito");
+                    }else{
+                        MessageBox.crearAlerta("No se ha iniciado sesión, los datos no corresponden.");
+                        Controller.registrarUsuario("");
+                    }
 
                     // Cierra ventana
                     Stage stage = (Stage) usuarioField.getScene().getWindow();
@@ -43,21 +49,25 @@ public class InicioSesionController {
                 }
                 else{
                     // Manda alerta no hay resultados
-                    MessageBox alerta = new MessageBox(Alert.AlertType.ERROR, "No se han encontrado aficionados con ese password");
+                    MessageBox alerta = new MessageBox(Alert.AlertType.ERROR, "No se han encontrado aficionados con ese nombre de usuario");
+                    Controller.registrarUsuario("");
                 }
             }catch (Exception e){
                 // Maneja Excepcion
                 Controller.manejarExcepcion(e);
+                Controller.registrarUsuario("");
             }
         }
         else{
             // Manda alerta, los campos no pueden estar vacios
             MessageBox alerta = new MessageBox(Alert.AlertType.ERROR, "Ninguno de los campos pueden estar vacios");
+            Controller.registrarUsuario("");
         }
     }
 
     @FXML public void cancelarOnClick(){
         //Cierra ventana
+        Controller.registrarUsuario("");
         Stage stage = (Stage) usuarioField.getScene().getWindow();
         stage.close();
     }

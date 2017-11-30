@@ -154,14 +154,32 @@ public class ComentarioController {
 
             ComentarioController controllerInterno = new ComentarioController(
                     numeroPartido, nivelesReply + 1, Integer.valueOf(labelNumero.getText()));
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/comentario.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../interfaz/comentarioCrud.fxml"));
+            loader.setController(controllerInterno);
 
             try{
                 Node n = loader.load();
                 contenedor.getChildren().add(n);
-                VBox parentExterno = (VBox)parent.getParent();
-                parentExterno.getChildren().add(contenedor);
+                VBox parentExterno = (VBox)parent.getParent().getParent();
+                parentExterno.getChildren().add(parentExterno.getChildren().indexOf(parent.getParent()) + 1,
+                        contenedor);
+
+                int numeroComentarioNuevo = 0;
+
+                for (Document resultado : Controller.getDatabase().getCollection("comentarios").
+                        find(eq("numero_partido", numeroPartido)))
+
+                    numeroComentarioNuevo = (numeroComentarioNuevo > resultado.getInteger("numero_comentario")) ?
+                            numeroComentarioNuevo : resultado.getInteger("numero_comentario");
+
+                numeroComentarioNuevo++;
+
+                Controller.getDatabase().getCollection("comentarios").updateOne(
+                        and(eq("numero_partido", documento.getInteger("numero_partido")),
+                        eq("numero_comentario", documento.getInteger("numero_comentario"))),
+                        push("replies", new Document("id", numeroComentarioNuevo))
+                );
+
             }catch (Exception e){
                 MessageBox.crearAlerta("No se puede mostrar el nuevo comentario ya que no se encuentra el archivo de interfaz");
                 e.printStackTrace();

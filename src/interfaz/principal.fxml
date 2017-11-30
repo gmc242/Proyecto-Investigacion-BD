@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PrincipalController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="1200.0" prefHeight="700.0" prefWidth="1000.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PrincipalController">
    <children>
       <VBox minWidth="200.0" prefHeight="700.0" prefWidth="200.0">
          <children>
@@ -26,6 +26,9 @@
             </VBox>
          </children>
       </VBox>
-      <ScrollPane fx:id="contenedorPrincipal" minHeight="700.0" minWidth="800.0" prefHeight="700.0" prefWidth="800.0" />
+      <ScrollPane fx:id="contenedorPrincipal" minHeight="700.0" minWidth="800.0" prefHeight="700.0" prefWidth="997.0">
+         <padding>
+            <Insets left="35.0" />
+         </padding></ScrollPane>
    </children>
 </HBox>
